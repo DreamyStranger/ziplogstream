@@ -1,9 +1,10 @@
 # ziplogstream
 
 ![CI](https://github.com/DreamyStranger/ziplogstream/actions/workflows/ci.yml/badge.svg)
-![Python Versions](https://img.shields.io/pypi/pyversions/ziplogstream.svg)](https://pypi.org/project/ziplogstream/)
-![License](https://img.shields.io/badge/license-MIT-green)
+[![Python Versions](https://img.shields.io/pypi/pyversions/ziplogstream.svg)](https://pypi.org/project/ziplogstream/)
+[![License](https://img.shields.io/github/license/DreamyStranger/ziplogstream.svg)]
 ![Tests](https://img.shields.io/badge/tests-pytest-blue)
+[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)]()
 
 **Streaming line reader for large log files stored inside ZIP archives.**
 
