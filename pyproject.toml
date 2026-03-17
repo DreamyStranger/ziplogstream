@@ -21,7 +21,7 @@ build-backend = "setuptools.build_meta"
 name = "ziplogstream"
 description = "Bounded-memory streaming of text lines from files inside ZIP archives."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 license = { text = "MIT" }
 
 authors = [
@@ -45,6 +45,7 @@ classifiers = [
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Topic :: Software Development :: Libraries",
@@ -111,7 +112,7 @@ skip_empty = true
 [tool.ruff]
 # A 100-character line length is a practical modern default for Python libraries.
 line-length = 100
-target-version = "py311"
+target-version = "py310"
 
 [tool.ruff.lint]
 # E: pycodestyle errors
@@ -122,8 +123,9 @@ select = ["E", "F", "I", "B"]
 
 [tool.mypy]
 # MyPy configuration for static type checking.
-python_version = "3.11"
-strict = false
+python_version = "3.10"
+strict = true
+# Keep true: test files import pytest which may not have stubs installed locally.
 ignore_missing_imports = true
 # Improves output quality when checking typed package code.
 pretty = true

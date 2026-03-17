@@ -35,6 +35,8 @@ engine using in-memory byte streams and do not involve ZIP archive I/O.
 
 from __future__ import annotations
 
+import pytest
+
 from ziplogstream.config import LineStreamerConfig
 from ziplogstream.streaming import BufferedLineReader
 
@@ -166,3 +168,63 @@ def test_iter_lines_returns_empty_result_for_empty_stream(make_bytes_stream) -> 
     reader = BufferedLineReader(raw, LineStreamerConfig(chunk_size=4))
 
     assert list(reader.iter_lines()) == []
+
+
+def test_iter_lines_replaces_invalid_bytes_under_replace_error_policy(
+    make_bytes_stream,
+) -> None:
+    """
+    Ensure invalid byte sequences are replaced with the Unicode replacement
+    character when the ``replace`` decode error policy is configured.
+    """
+    raw = make_bytes_stream(b"ok\n\xff\nend\n")
+    reader = BufferedLineReader(raw, LineStreamerConfig(chunk_size=8, errors="replace"))
+
+    assert list(reader.iter_lines()) == ["ok", "\ufffd", "end"]
+
+
+def test_iter_lines_drops_invalid_bytes_under_ignore_error_policy(
+    make_bytes_stream,
+) -> None:
+    """
+    Ensure invalid byte sequences are silently dropped when the ``ignore``
+    decode error policy is configured.
+    """
+    raw = make_bytes_stream(b"a\xffb\n")
+    reader = BufferedLineReader(raw, LineStreamerConfig(chunk_size=8, errors="ignore"))
+
+    assert list(reader.iter_lines()) == ["ab"]
+
+
+def test_iter_lines_raises_on_invalid_bytes_under_strict_error_policy(
+    make_bytes_stream,
+) -> None:
+    """
+    Ensure a ``UnicodeDecodeError`` is raised when the ``strict`` error
+    policy is configured and the stream contains invalid byte sequences.
+    """
+    raw = make_bytes_stream(b"valid\n\xff\nmore\n")
+    reader = BufferedLineReader(raw, LineStreamerConfig(chunk_size=16, errors="strict"))
+
+    with pytest.raises(UnicodeDecodeError):
+        list(reader.iter_lines())
+
+
+def test_iter_lines_handles_consecutive_oversized_flushes(make_bytes_stream) -> None:
+    """
+    Ensure multiple consecutive oversized flushes work correctly.
+
+    When the buffer exceeds ``max_line_bytes`` across several chunks with
+    no intervening newline, each flush should clear the buffer so the next
+    chunk starts fresh. This verifies that ``buffer.clear()`` fully resets
+    state between flushes.
+    """
+    # With chunk_size=4 and max_line_bytes=5, each pair of chunks (8 bytes)
+    # exceeds the limit, triggering two separate forced flushes.
+    raw = make_bytes_stream(b"abcdefghijklmnop")
+    reader = BufferedLineReader(
+        raw,
+        LineStreamerConfig(chunk_size=4, max_line_bytes=5),
+    )
+
+    assert list(reader.iter_lines()) == ["abcdefgh", "ijklmnop"]

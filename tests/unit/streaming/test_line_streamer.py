@@ -43,7 +43,7 @@ from pathlib import Path
 import pytest
 
 from ziplogstream import LineStreamer, LineStreamerConfig
-from ziplogstream.errors import ZipMemberNotFoundError
+from ziplogstream.errors import ZipMemberNotFoundError, ZipValidationError
 
 
 def test_streamer_streams_lines_from_zip_member(make_text_zip) -> None:
@@ -148,4 +148,68 @@ def test_streamer_supports_path_objects(make_text_zip) -> None:
 
     streamer = LineStreamer(Path(zip_path), "app.log")
 
+    assert list(streamer.stream()) == ["alpha", "beta"]
+
+
+def test_streamer_raises_file_not_found_when_zip_does_not_exist(
+    tmp_path: Path,
+) -> None:
+    """
+    Ensure ``FileNotFoundError`` is raised by ``stream()`` when the archive
+    path does not exist on disk.
+
+    This verifies that path validation inside ``stream()`` fires correctly
+    through the public ``LineStreamer`` API, not just the validator layer.
+    """
+    streamer = LineStreamer(tmp_path / "missing.zip", "app.log")
+
+    with pytest.raises(FileNotFoundError):
+        list(streamer.stream())
+
+
+def test_streamer_raises_zip_validation_error_for_non_zip_suffix(
+    tmp_path: Path,
+) -> None:
+    """
+    Ensure ``ZipValidationError`` is raised by ``stream()`` when the path
+    does not have a ``.zip`` suffix.
+    """
+    path = tmp_path / "archive.tar"
+    path.write_bytes(b"not a zip")
+
+    streamer = LineStreamer(path, "app.log")
+
+    with pytest.raises(ZipValidationError):
+        list(streamer.stream())
+
+
+def test_streamer_yields_empty_iterator_for_empty_member(make_zip) -> None:
+    """
+    Ensure an archive member with zero bytes yields no lines.
+    """
+    zip_path = make_zip("empty_member.zip", {"logs/app.log": b""})
+
+    streamer = LineStreamer(zip_path, "app.log")
+
+    assert list(streamer.stream()) == []
+
+
+def test_streamer_stream_can_be_called_multiple_times(make_text_zip) -> None:
+    """
+    Ensure calling ``stream()`` more than once on the same ``LineStreamer``
+    instance produces the same result each time.
+
+    ``stream()`` creates a fresh generator on each call, so repeated calls
+    must not exhaust or corrupt internal state.
+    """
+    zip_path = make_text_zip(
+        "multi_stream.zip",
+        {
+            "logs/app.log": "alpha\nbeta\n",
+        },
+    )
+
+    streamer = LineStreamer(zip_path, "app.log")
+
+    assert list(streamer.stream()) == ["alpha", "beta"]
     assert list(streamer.stream()) == ["alpha", "beta"]

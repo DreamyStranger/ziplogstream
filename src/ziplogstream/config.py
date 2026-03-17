@@ -1,15 +1,15 @@
 """
-ziplogstream.config.line_streamer
-================================
+ziplogstream.config
+===================
 
-Configuration models for ZIP member line streaming.
+Configuration model for ZIP member line streaming.
 
 Overview
 --------
-This module defines the immutable configuration object used by the
-line streaming pipeline. The configuration is intentionally small and
-focused only on concerns directly related to reading and decoding text
-lines from a binary member stream.
+This module defines the immutable configuration object used by the line
+streaming pipeline. The configuration is intentionally small and focused
+only on concerns directly related to reading and decoding text lines from
+a binary member stream.
 
 Design goals
 ------------
@@ -20,9 +20,7 @@ Design goals
 
 Notes
 -----
-`LineStreamerConfig` is designed to be passed into higher-level runtime
-components such as `ziplogstream.streaming.line_streamer.LineStreamer`
-and `ziplogstream.streaming.buffered_line_reader.BufferedLineReader`.
+`LineStreamerConfig` is passed into `LineStreamer` and `BufferedLineReader`.
 
 The configuration controls:
 - chunked read size

@@ -23,7 +23,7 @@ The package exposes:
 from __future__ import annotations
 
 from .archive.member_resolution import default_zip_member_resolver
-from .config.streamer_config import LineStreamerConfig
+from .config import LineStreamerConfig
 from .errors import (
     ConfigurationError,
     ZipLogStreamError,

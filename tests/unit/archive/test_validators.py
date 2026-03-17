@@ -144,3 +144,18 @@ def test_validate_zip_path_accepts_existing_zip_file(tmp_path: Path) -> None:
         zf.writestr("app.log", b"hello\n")
 
     validate_zip_path(path)
+
+
+def test_validate_zip_path_accepts_uppercase_zip_suffix(tmp_path: Path) -> None:
+    """
+    Ensure the ``.zip`` suffix check is case-insensitive.
+
+    The validator normalizes the suffix with ``.lower()`` before comparing,
+    so ``.ZIP`` and ``.Zip`` should pass the same as ``.zip``.
+    """
+    path = tmp_path / "archive.ZIP"
+
+    with zipfile.ZipFile(path, "w") as zf:
+        zf.writestr("app.log", b"hello\n")
+
+    validate_zip_path(path)

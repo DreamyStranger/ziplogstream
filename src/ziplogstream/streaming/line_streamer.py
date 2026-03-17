@@ -18,7 +18,7 @@ Public contract
 ---------------
 - The target member is streamed directly from the ZIP archive.
 - The member is never extracted to disk.
-- Decoded lines are yielded one at a time without trailing newline.
+- Decoded lines are yielded one at a time without a trailing newline.
 - Memory use remains bounded by chunked reads and forced buffer flushes.
 
 Design goals
@@ -31,10 +31,9 @@ Design goals
 
 from __future__ import annotations
 
-import io
 import zipfile
 from pathlib import Path
-from typing import Iterator, cast
+from typing import Iterator
 
 from ziplogstream.archive import (
     default_zip_member_resolver,
@@ -43,8 +42,8 @@ from ziplogstream.archive import (
 )
 from ziplogstream.config import LineStreamerConfig
 from ziplogstream.logging import get_logger
-from ziplogstream.streaming import BufferedLineReader
-from ziplogstream.types import ZipMemberResolver
+from ziplogstream.streaming.buffered_line_reader import BufferedLineReader
+from ziplogstream.protocols import ZipMemberResolver
 
 logger = get_logger(__name__)
 
@@ -122,6 +121,5 @@ class LineStreamer:
             )
 
             with zf.open(member_name, "r") as raw:
-                buffered_raw = cast(io.BufferedIOBase, raw)
-                reader = BufferedLineReader(buffered_raw, self.config)
+                reader = BufferedLineReader(raw, self.config)
                 yield from reader.iter_lines()

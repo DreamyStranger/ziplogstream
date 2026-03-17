@@ -65,7 +65,7 @@ Or install with development dependencies:
 pip install -e .[dev]
 ```
 
-Python **3.11+** is required.
+Python **3.10+** is required.
 
 ---
 
@@ -214,7 +214,7 @@ from ziplogstream import (
     LineStreamer,
     LineStreamerConfig,
     default_zip_member_resolver,
-    ZipLogStreamerError,
+    ZipLogStreamError,
     ConfigurationError,
     ZipValidationError,
     ZipMemberNotFoundError,
@@ -271,35 +271,35 @@ bounded memory usage.
 
 `ziplogstream` is optimized for throughput while preserving a simple API.
 
-Example benchmark results from the included benchmark scripts on a local machine:
+Benchmark results (median across 3 runs, 1 MiB chunk size, local machine):
 
 ```text
-many-short-lines         ~78 MiB/s
-medium-lines            ~145 MiB/s
-single-huge-line        ~224 MiB/s
+case                     MiB      lines   median MiB/s   median lines/s
+------------------------------------------------------------------------
+many-short-lines       24.80    400,000          96.32        1,553,886
+medium-lines           16.87    120,000         162.79        1,157,946
+crlf-lines             12.59    300,000          56.37        1,343,303
+single-huge-line       24.00          1         273.35               11
+dense-empty-lines       2.75  1,080,000           4.85        1,944,745
 ```
 
-Example 1 GiB stress run:
+`single-huge-line` shows raw I/O throughput with no per-line overhead.
+`dense-empty-lines` throughput looks low in MiB/s because the payload is
+almost entirely newlines — lines/s is the meaningful metric there.
+
+Example 1 GiB memory-tracked stress run (compressed DEFLATE, disk I/O):
 
 ```text
 Decoded bytes:    1008.48 MiB
 Lines streamed:   16,268,816
-Elapsed time:     13.51 s
-Throughput:       74.62 MiB/s
+Elapsed time:     61.14 s
+Throughput:       16.49 MiB/s
+Peak Python mem:  5.20 MiB
 ```
 
-Example 1 GiB memory-tracked stress run:
-
-```text
-Decoded bytes:    1008.48 MiB
-Lines streamed:   16,268,816
-Elapsed time:     57.37 s
-Throughput:       17.58 MiB/s
-Peak Python mem:  7.20 MiB
-```
-
-The memory-tracked run is slower because `tracemalloc` instruments Python
-allocations. It is intended for memory validation, not throughput comparison.
+The throughput here is DEFLATE-decompression and disk I/O bound, not streamer
+bound. The key result is **5.20 MiB peak Python memory** while processing over
+1 GiB of decoded content — memory usage stays flat regardless of input size.
 
 ---
 
@@ -347,16 +347,16 @@ Run benchmarks:
 python scripts/benchmark_streaming.py
 ```
 
+Save the benchmark summary table to a file:
+
+```bash
+python scripts/benchmark_streaming.py --table-out results/bench.txt
+```
+
 Run a large-file stress test:
 
 ```bash
-python scripts/stress_large_zip.py --size-gib 1.0
-```
-
-Track peak Python memory during the stress test:
-
-```bash
-python scripts/stress_large_zip.py --size-gib 1.0 --track-memory
+python scripts/stress_large_zip.py --size-gib 1.0 --track-memory --report-out results/stress.txt
 ```
 
 ---
@@ -375,10 +375,16 @@ ziplogstream/
 │       ├── version.py
 │       ├── errors.py
 │       ├── logging.py
-│       ├── config/
+│       ├── config.py
+│       ├── protocols.py
 │       ├── archive/
-│       ├── streaming/
-│       └── types/
+│       │   ├── __init__.py
+│       │   ├── member_resolution.py
+│       │   └── validators.py
+│       └── streaming/
+│           ├── __init__.py
+│           ├── buffered_line_reader.py
+│           └── line_streamer.py
 ├── tests/
 │   ├── conftest.py
 │   ├── unit/

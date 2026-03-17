@@ -7,14 +7,17 @@ Deterministic ZIP member resolution strategies.
 Overview
 --------
 This module provides logic for resolving a single target member from an
-open ZIP archive. Resolution is intentionally separated from archive
-opening and line streaming so that member selection remains easy to test,
-replace, and reason about.
+open ZIP archive, and a higher-level helper that combines path validation
+with member resolution.
 
 Public contract
 ---------------
-Resolvers in this module operate on an already-open `zipfile.ZipFile`
-instance and return the exact member name to read.
+`default_zip_member_resolver` operates on an already-open `zipfile.ZipFile`
+and returns the exact member name to read.
+
+`resolve_zip_member_name` is a convenience helper for callers who need the
+normalized archive path and resolved member name without streaming. It
+handles path validation and archive opening internally.
 
 The default resolver follows a deterministic strategy:
     1. If the target contains no '/' characters, prefer exact basename
@@ -31,15 +34,19 @@ Design goals
 - Minimal policy surface
 - Easy replacement with custom resolvers
 
-This module does not open archives or stream bytes.
+This module does not stream bytes or decode text.
 """
 
 from __future__ import annotations
 
 import zipfile
-from typing import Sequence
+from collections.abc import Sequence
+from pathlib import Path
 
 from ziplogstream.errors import ZipMemberAmbiguityError, ZipMemberNotFoundError
+from ziplogstream.protocols import ZipMemberResolver
+
+from .validators import normalize_zip_path, validate_zip_path
 
 
 def default_zip_member_resolver(zf: zipfile.ZipFile, target: str) -> str:
@@ -96,3 +103,54 @@ def default_zip_member_resolver(zf: zipfile.ZipFile, target: str) -> str:
         )
 
     return matches[0]
+
+
+def resolve_zip_member_name(
+    zip_path: Path | str,
+    target: str,
+    *,
+    resolver: ZipMemberResolver,
+) -> tuple[Path, str]:
+    """
+    Validate a ZIP path and resolve the exact target member name.
+
+    This helper is useful when the caller needs the normalized archive path
+    together with the resolved member name, without streaming the content.
+    It combines path normalization, validation, and member resolution into
+    a single call.
+
+    Args:
+        zip_path:
+            Path to the ZIP archive.
+
+        target:
+            User-provided member selector string.
+
+        resolver:
+            Callable used to resolve `target` to one exact member name.
+
+    Returns:
+        A tuple of:
+        - normalized ZIP path
+        - resolved member name
+
+    Raises:
+        FileNotFoundError:
+            If the ZIP path does not exist.
+
+        ZipValidationError:
+            If the archive path is invalid.
+
+        ZipMemberNotFoundError:
+            If the resolver cannot find a matching member.
+
+        ZipMemberAmbiguityError:
+            If the resolver finds more than one matching member.
+    """
+    normalized_path = normalize_zip_path(zip_path)
+    validate_zip_path(normalized_path)
+
+    with zipfile.ZipFile(normalized_path, "r") as zf:
+        member_name = resolver(zf, target)
+
+    return normalized_path, member_name

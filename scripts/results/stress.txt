@@ -1,0 +1,11 @@
+ziplogstream Stress Test Results
+================================
+Run at: 2026-03-17T15:24:46Z
+Streaming complete
+------------------
+ZIP path:         .benchmarks\large_logs_1g.zip
+Decoded bytes:    1008.48 MiB
+Lines streamed:   16,268,816
+Elapsed time:     61.14 s
+Throughput:       16.49 MiB/s
+Peak Python mem:  5.20 MiB
