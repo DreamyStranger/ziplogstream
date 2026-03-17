@@ -66,7 +66,7 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Callable, IO, Iterable
+from typing import IO, Callable, Iterable
 
 from ziplogstream import LineStreamer, LineStreamerConfig
 

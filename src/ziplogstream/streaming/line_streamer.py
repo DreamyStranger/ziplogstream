@@ -42,8 +42,8 @@ from ziplogstream.archive import (
 )
 from ziplogstream.config import LineStreamerConfig
 from ziplogstream.logging import get_logger
-from ziplogstream.streaming.buffered_line_reader import BufferedLineReader
 from ziplogstream.protocols import ZipMemberResolver
+from ziplogstream.streaming.buffered_line_reader import BufferedLineReader
 
 logger = get_logger(__name__)
 
