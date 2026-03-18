@@ -42,9 +42,9 @@ class ZipValidationError(ZipLogStreamError):
     Raised when a ZIP archive fails structural validation.
 
     Examples include:
-    - archive file does not exist
+    - path is not a file
     - file does not have a `.zip` suffix
-    - archive cannot be opened
+    - archive is corrupt or cannot be opened as a valid ZIP
     """
 
 

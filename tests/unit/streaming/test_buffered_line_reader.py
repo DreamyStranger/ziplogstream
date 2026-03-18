@@ -38,7 +38,7 @@ from __future__ import annotations
 import pytest
 
 from ziplogstream.config import LineStreamerConfig
-from ziplogstream.streaming import BufferedLineReader
+from ziplogstream.streaming.buffered_line_reader import BufferedLineReader
 
 
 def test_iter_lines_yields_basic_newline_delimited_lines(make_bytes_stream) -> None:
@@ -119,7 +119,7 @@ def test_iter_lines_flushes_oversized_unterminated_buffer_as_chunk(
         ),
     )
 
-    assert list(reader.iter_lines()) == ["abcdefgh", "ij"]
+    assert list(reader.iter_lines()) == ["abcd", "efgh", "ij"]
 
 
 def test_iter_lines_does_not_strip_carriage_return_on_forced_flush(
@@ -132,7 +132,7 @@ def test_iter_lines_does_not_strip_carriage_return_on_forced_flush(
     A force-flushed chunk may represent only part of a logical line, so
     removing ``\\r`` in that path would risk corrupting the streamed data.
     """
-    raw = make_bytes_stream(b"abcde\r")
+    raw = make_bytes_stream(b"ab\rcdef")
     reader = BufferedLineReader(
         raw,
         LineStreamerConfig(
@@ -141,7 +141,7 @@ def test_iter_lines_does_not_strip_carriage_return_on_forced_flush(
         ),
     )
 
-    assert list(reader.iter_lines()) == ["abcde\r"]
+    assert list(reader.iter_lines()) == ["ab\r", "cdef"]
 
 
 def test_iter_lines_strips_trailing_carriage_return_on_final_partial_line(
@@ -219,12 +219,12 @@ def test_iter_lines_handles_consecutive_oversized_flushes(make_bytes_stream) -> 
     chunk starts fresh. This verifies that ``buffer.clear()`` fully resets
     state between flushes.
     """
-    # With chunk_size=4 and max_line_bytes=5, each pair of chunks (8 bytes)
-    # exceeds the limit, triggering two separate forced flushes.
+    # With chunk_size=4 and max_line_bytes=5, each chunk after the first
+    # triggers a pre-extend flush, yielding one chunk-size segment at a time.
     raw = make_bytes_stream(b"abcdefghijklmnop")
     reader = BufferedLineReader(
         raw,
         LineStreamerConfig(chunk_size=4, max_line_bytes=5),
     )
 
-    assert list(reader.iter_lines()) == ["abcdefgh", "ijklmnop"]
+    assert list(reader.iter_lines()) == ["abcd", "efgh", "ijkl", "mnop"]

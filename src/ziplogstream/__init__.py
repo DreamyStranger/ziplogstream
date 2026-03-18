@@ -31,6 +31,7 @@ from .errors import (
     ZipMemberNotFoundError,
     ZipValidationError,
 )
+from .protocols import ZipMemberResolver
 from .streaming.line_streamer import LineStreamer
 from .version import __version__
 
@@ -38,6 +39,7 @@ __all__ = [
     "__version__",
     "LineStreamer",
     "LineStreamerConfig",
+    "ZipMemberResolver",
     "default_zip_member_resolver",
     "ZipLogStreamError",
     "ConfigurationError",

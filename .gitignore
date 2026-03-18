@@ -15,9 +15,12 @@ ENV/
 .python-version
 
 # ============================================================================
-# AI environments
+# AI / Claude (keep rules, ignore local state)
 # ============================================================================
-.claude
+.claude/cache/
+.claude/tmp/
+.claude/logs/
+.claude/settings.local.json
 
 # ============================================================================
 # Build artifacts / packaging

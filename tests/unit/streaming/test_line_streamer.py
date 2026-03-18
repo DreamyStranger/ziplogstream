@@ -38,6 +38,7 @@ tests.
 
 from __future__ import annotations
 
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -192,6 +193,44 @@ def test_streamer_yields_empty_iterator_for_empty_member(make_zip) -> None:
     streamer = LineStreamer(zip_path, "app.log")
 
     assert list(streamer.stream()) == []
+
+
+def test_streamer_raises_zip_validation_error_for_corrupt_archive(
+    tmp_path: Path,
+) -> None:
+    """
+    Ensure ``ZipValidationError`` is raised when the archive is corrupt,
+    not a raw ``zipfile.BadZipFile``, and that the original exception is
+    chained as ``__cause__``.
+    """
+    corrupt_zip = tmp_path / "corrupt.zip"
+    corrupt_zip.write_bytes(b"this is not a valid zip file")
+
+    streamer = LineStreamer(corrupt_zip, "app.log")
+
+    with pytest.raises(ZipValidationError, match="Invalid or corrupt ZIP archive") as exc_info:
+        list(streamer.stream())
+
+    assert isinstance(exc_info.value.__cause__, zipfile.BadZipFile)
+
+
+def test_streamer_raises_member_not_found_when_custom_resolver_returns_bad_name(
+    make_text_zip,
+) -> None:
+    """
+    Ensure ``ZipMemberNotFoundError`` is raised (not a bare ``KeyError``)
+    when a custom resolver returns a member name that does not exist in the
+    archive.
+    """
+    zip_path = make_text_zip("bad_resolver.zip", {"logs/app.log": "alpha\n"})
+
+    def bad_resolver(zf: zipfile.ZipFile, target: str) -> str:
+        return "nonexistent/member.log"
+
+    streamer = LineStreamer(zip_path, "app.log", resolver=bad_resolver)
+
+    with pytest.raises(ZipMemberNotFoundError, match="nonexistent/member.log"):
+        list(streamer.stream())
 
 
 def test_streamer_stream_can_be_called_multiple_times(make_text_zip) -> None:

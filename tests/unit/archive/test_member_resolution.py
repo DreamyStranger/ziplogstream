@@ -45,7 +45,8 @@ from pathlib import Path
 import pytest
 
 from ziplogstream import ZipMemberAmbiguityError, ZipMemberNotFoundError, ZipValidationError
-from ziplogstream.archive import default_zip_member_resolver, resolve_zip_member_name
+from ziplogstream.archive import default_zip_member_resolver
+from ziplogstream.archive.member_resolution import resolve_zip_member_name
 
 
 def test_resolver_prefers_exact_basename_match_when_target_is_plain_filename(
@@ -176,7 +177,7 @@ def test_resolver_rejects_empty_target_selector(make_zip) -> None:
 
     with zipfile.ZipFile(zip_path, "r") as zf:
         with pytest.raises(
-            ZipMemberNotFoundError,
+            ZipValidationError,
             match="Target member selector must be a non-empty string",
         ):
             default_zip_member_resolver(zf, "")
@@ -198,7 +199,7 @@ def test_resolver_rejects_non_string_target(make_zip) -> None:
 
     with zipfile.ZipFile(zip_path, "r") as zf:
         with pytest.raises(
-            ZipMemberNotFoundError,
+            ZipValidationError,
             match="Target member selector must be a non-empty string",
         ):
             default_zip_member_resolver(zf, None)  # type: ignore[arg-type]
@@ -295,3 +296,22 @@ def test_resolve_zip_member_name_raises_when_member_cannot_be_resolved(
         resolve_zip_member_name(
             zip_path, "missing.log", resolver=default_zip_member_resolver
         )
+
+
+def test_resolve_zip_member_name_raises_zip_validation_error_for_corrupt_archive(
+    tmp_path: Path,
+) -> None:
+    """
+    Ensure a corrupt archive raises ``ZipValidationError`` rather than
+    leaking ``zipfile.BadZipFile``, and that the original exception is
+    chained as ``__cause__``.
+    """
+    corrupt_zip = tmp_path / "corrupt.zip"
+    corrupt_zip.write_bytes(b"this is not a valid zip file")
+
+    with pytest.raises(ZipValidationError, match="Invalid or corrupt ZIP archive") as exc_info:
+        resolve_zip_member_name(
+            corrupt_zip, "app.log", resolver=default_zip_member_resolver
+        )
+
+    assert isinstance(exc_info.value.__cause__, zipfile.BadZipFile)

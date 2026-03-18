@@ -31,6 +31,7 @@ Design goals
 
 from __future__ import annotations
 
+import logging
 import zipfile
 from pathlib import Path
 from typing import Iterator
@@ -41,11 +42,11 @@ from ziplogstream.archive import (
     validate_zip_path,
 )
 from ziplogstream.config import LineStreamerConfig
-from ziplogstream.logging import get_logger
+from ziplogstream.errors import ZipMemberNotFoundError, ZipValidationError
 from ziplogstream.protocols import ZipMemberResolver
 from ziplogstream.streaming.buffered_line_reader import BufferedLineReader
 
-logger = get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class LineStreamer:
@@ -112,7 +113,11 @@ class LineStreamer:
         """
         validate_zip_path(self.zip_path)
 
-        with zipfile.ZipFile(self.zip_path, "r") as zf:
+        try:
+            zf = zipfile.ZipFile(self.zip_path, "r")
+        except zipfile.BadZipFile as exc:
+            raise ZipValidationError(f"Invalid or corrupt ZIP archive: {self.zip_path}") from exc
+        with zf:
             member_name = self.resolver(zf, self.target)
             logger.debug(
                 "Streaming ZIP member '%s' from archive '%s'",
@@ -120,6 +125,12 @@ class LineStreamer:
                 self.zip_path.name,
             )
 
-            with zf.open(member_name, "r") as raw:
+            try:
+                raw_ctx = zf.open(member_name, "r")
+            except KeyError as exc:
+                raise ZipMemberNotFoundError(
+                    f"Resolved member '{member_name}' not found in archive: {self.zip_path}"
+                ) from exc
+            with raw_ctx as raw:
                 reader = BufferedLineReader(raw, self.config)
                 yield from reader.iter_lines()

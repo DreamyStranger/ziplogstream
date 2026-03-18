@@ -38,7 +38,7 @@ Notes
 -----
 Oversized buffer flushing is intentionally conservative: when a buffer is
 force-flushed due to ``max_line_bytes``, no trailing carriage return is
-removed because the chunk may not represent the end of a logical line.
+removed because the flushed content may not represent the end of a logical line.
 
 Performance note
 ----------------
@@ -50,12 +50,12 @@ counts (e.g. 1M+ short lines).
 
 from __future__ import annotations
 
+import logging
 from typing import IO, Iterator
 
 from ziplogstream.config import LineStreamerConfig
-from ziplogstream.logging import get_logger
 
-logger = get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class BufferedLineReader:
@@ -95,10 +95,10 @@ class BufferedLineReader:
 
         Oversized line behavior
         -----------------------
-        If no newline is found and the buffer grows beyond
+        If appending the next chunk would cause the buffer to exceed
         ``config.max_line_bytes``, the current buffer is force-flushed as
-        a decoded chunk and cleared. No carriage return is stripped during
-        a forced flush because the chunk may be mid-line.
+        a decoded chunk and cleared before the extend. No carriage return
+        is stripped during a forced flush because the buffer may be mid-line.
 
         Yields:
             One decoded text line at a time.
@@ -123,6 +123,18 @@ class BufferedLineReader:
             chunk = read(chunk_size)
             if not chunk:
                 break
+
+            # --- Oversized line guard ---
+            # Flush the partial-line buffer before extending so the buffer
+            # never exceeds max_line_bytes. No CR stripping here: the buffer
+            # may hold only part of a logical line.
+            if len(buffer) + len(chunk) > max_line_bytes:
+                logger.warning(
+                    "Oversized line buffer exceeded %d bytes; flushing chunk.",
+                    max_line_bytes,
+                )
+                yield buffer.decode(encoding, errors)
+                buffer.clear()
 
             buffer.extend(chunk)
             start = 0
@@ -149,19 +161,6 @@ class BufferedLineReader:
             # Drop the consumed portion of the buffer in one operation.
             if start:
                 del buffer[:start]
-
-            # --- Oversized line guard ---
-            # If a line has no newline and keeps growing, flush the buffer
-            # as a raw chunk to prevent unbounded memory growth. No CR
-            # stripping here: the chunk may be mid-line, so stripping \r
-            # could corrupt partial data.
-            if len(buffer) > max_line_bytes:
-                logger.warning(
-                    "Oversized line buffer exceeded %d bytes; flushing chunk.",
-                    max_line_bytes,
-                )
-                yield buffer.decode(encoding, errors)
-                buffer.clear()
 
         # --- Final partial line ---
         # Emit any remaining bytes as the last line, even without a trailing

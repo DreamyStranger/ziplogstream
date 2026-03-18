@@ -43,7 +43,7 @@ import zipfile
 from collections.abc import Sequence
 from pathlib import Path
 
-from ziplogstream.errors import ZipMemberAmbiguityError, ZipMemberNotFoundError
+from ziplogstream.errors import ZipMemberAmbiguityError, ZipMemberNotFoundError, ZipValidationError
 from ziplogstream.protocols import ZipMemberResolver
 
 from .validators import normalize_zip_path, validate_zip_path
@@ -80,7 +80,7 @@ def default_zip_member_resolver(zf: zipfile.ZipFile, target: str) -> str:
             If the target matches more than one archive member.
     """
     if not isinstance(target, str) or not target:
-        raise ZipMemberNotFoundError("Target member selector must be a non-empty string")
+        raise ZipValidationError("Target member selector must be a non-empty string")
 
     names: Sequence[str] = zf.namelist()
     matches: list[str] = []
@@ -150,7 +150,11 @@ def resolve_zip_member_name(
     normalized_path = normalize_zip_path(zip_path)
     validate_zip_path(normalized_path)
 
-    with zipfile.ZipFile(normalized_path, "r") as zf:
+    try:
+        zf_ctx = zipfile.ZipFile(normalized_path, "r")
+    except zipfile.BadZipFile as exc:
+        raise ZipValidationError(f"Invalid or corrupt ZIP archive: {normalized_path}") from exc
+    with zf_ctx as zf:
         member_name = resolver(zf, target)
 
     return normalized_path, member_name

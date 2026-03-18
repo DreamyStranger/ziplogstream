@@ -44,10 +44,9 @@ def test_stream_oversized_unterminated_line_is_force_flushed_end_to_end(
     Ensure an oversized logical line without any newline delimiter is
     force-flushed as decoded chunks through the full public pipeline.
 
-    With ``chunk_size=4`` and ``max_line_bytes=5``, the internal buffer
-    grows from 4 bytes after the first read to 8 bytes after the second
-    read. At that point it exceeds the configured maximum and is emitted
-    as a chunk, after which streaming continues with the remaining bytes.
+    With ``chunk_size=4`` and ``max_line_bytes=5``, each chunk after the
+    first causes a pre-extend flush so the buffer never exceeds
+    ``max_line_bytes`` at any point during streaming.
     """
     zip_path = make_text_zip(
         "oversized_single_line.zip",
@@ -65,7 +64,7 @@ def test_stream_oversized_unterminated_line_is_force_flushed_end_to_end(
         ),
     )
 
-    assert list(streamer.stream()) == ["abcdefgh", "ij"]
+    assert list(streamer.stream()) == ["abcd", "efgh", "ij"]
 
 
 def test_stream_oversized_content_can_flush_multiple_times_end_to_end(
@@ -94,7 +93,7 @@ def test_stream_oversized_content_can_flush_multiple_times_end_to_end(
         ),
     )
 
-    assert list(streamer.stream()) == ["abcdefgh", "ijklmnop", "qr"]
+    assert list(streamer.stream()) == ["abcd", "efgh", "ijkl", "mnop", "qr"]
 
 
 def test_stream_oversized_buffer_preserves_remaining_final_partial_content(
@@ -123,7 +122,7 @@ def test_stream_oversized_buffer_preserves_remaining_final_partial_content(
         ),
     )
 
-    assert list(streamer.stream()) == ["abcdefgh", "ijk"]
+    assert list(streamer.stream()) == ["abcd", "efgh", "ijk"]
 
 
 def test_stream_oversized_forced_flush_does_not_strip_trailing_carriage_return(
@@ -140,7 +139,7 @@ def test_stream_oversized_forced_flush_does_not_strip_trailing_carriage_return(
     zip_path = make_text_zip(
         "oversized_trailing_cr.zip",
         {
-            "logs/app.log": "abcde\r",
+            "logs/app.log": "ab\rcdef",
         },
     )
 
@@ -153,4 +152,4 @@ def test_stream_oversized_forced_flush_does_not_strip_trailing_carriage_return(
         ),
     )
 
-    assert list(streamer.stream()) == ["abcde\r"]
+    assert list(streamer.stream()) == ["ab\r", "cdef"]

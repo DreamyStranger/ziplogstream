@@ -4,7 +4,7 @@
 [![Python Versions](https://img.shields.io/pypi/pyversions/ziplogstream.svg)](https://pypi.org/project/ziplogstream/)
 ![License](https://img.shields.io/github/license/DreamyStranger/ziplogstream.svg)
 ![Tests](https://img.shields.io/badge/tests-pytest-blue)
-[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)]()
+[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/DreamyStranger/ziplogstream/actions/workflows/ci.yml)
 
 **Streaming line reader for large log files stored inside ZIP archives.**
 
@@ -47,7 +47,13 @@ hundreds of megabytes or gigabytes in size.
 
 ## Installation
 
-Install directly from source:
+Install from PyPI:
+
+```bash
+pip install ziplogstream
+```
+
+Or install directly from source:
 
 ```bash
 pip install .
