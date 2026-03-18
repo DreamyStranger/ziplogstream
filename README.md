@@ -380,7 +380,6 @@ ziplogstream/
 │       ├── py.typed
 │       ├── version.py
 │       ├── errors.py
-│       ├── logging.py
 │       ├── config.py
 │       ├── protocols.py
 │       ├── archive/

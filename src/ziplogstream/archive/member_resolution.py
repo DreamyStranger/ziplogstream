@@ -15,9 +15,9 @@ Public contract
 `default_zip_member_resolver` operates on an already-open `zipfile.ZipFile`
 and returns the exact member name to read.
 
-`resolve_zip_member_name` is a convenience helper for callers who need the
-normalized archive path and resolved member name without streaming. It
-handles path validation and archive opening internally.
+`resolve_zip_member_name` is an internal helper that combines path
+validation, archive opening, and member resolution into a single call.
+It is not part of the public API.
 
 The default resolver follows a deterministic strategy:
     1. If the target contains no '/' characters, prefer exact basename
@@ -73,6 +73,9 @@ def default_zip_member_resolver(zf: zipfile.ZipFile, target: str) -> str:
         The resolved archive member name.
 
     Raises:
+        ZipValidationError:
+            If ``target`` is not a non-empty string.
+
         ZipMemberNotFoundError:
             If no archive member matches the target.
 

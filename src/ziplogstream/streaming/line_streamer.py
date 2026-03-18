@@ -103,7 +103,8 @@ class LineStreamer:
                 If the ZIP archive path does not exist.
 
             ZipValidationError:
-                If the archive path is invalid.
+                If the archive path is invalid, the archive is corrupt,
+                or the target is not a non-empty string.
 
             ZipMemberNotFoundError:
                 If the target member cannot be resolved.
