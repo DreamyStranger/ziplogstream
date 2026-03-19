@@ -1,5 +1,5 @@
 """
-ziplogstream.streaming.buffered_line_reader
+zip_logstream.streaming.buffered_line_reader
 ==========================================
 
 Buffered line reader for chunked binary streams.
@@ -53,7 +53,7 @@ from __future__ import annotations
 import logging
 from typing import IO, Iterator
 
-from ziplogstream.config import LineStreamerConfig
+from zip_logstream.config import LineStreamerConfig
 
 logger = logging.getLogger(__name__)
 

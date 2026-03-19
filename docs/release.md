@@ -3,7 +3,7 @@
 ## Version Source
 Version is defined in:
 
-src/ziplogstream/version.py
+src/zip_logstream/version.py
 
 Update __version__ before release.
 
@@ -20,7 +20,7 @@ __version__ = "X.Y.Z"
 3. Commit:
 
 ```bash
-git add src/ziplogstream/version.py CHANGELOG.md
+git add src/zip_logstream/version.py CHANGELOG.md
 git commit -m "Release vX.Y.Z"
 ```
 
@@ -45,8 +45,9 @@ v*
 is pushed.
 
 ## CI / Release
-- ci.yml runs tests and validation
-- release.yml builds and publishes
+- ci.yml runs tests and packaging validation on Linux and Windows
+- release.yml requires Linux and Windows checks to pass before publishing
+- the publish job uploads the Ubuntu-built distributions to PyPI
 
 ## PyPI Trusted Publishing
 Must match:
@@ -57,10 +58,22 @@ Must match:
 
 ## Post Release Check
 
+macOS / Linux:
+
 ```bash
 python -m venv .venv-check
 . .venv-check/bin/activate
 python -m pip install --upgrade pip
-pip install ziplogstream
-python -c "import ziplogstream; print(ziplogstream.__version__)"
+pip install zip-logstream
+python -c "import zip_logstream; print(zip_logstream.__version__)"
+```
+
+Windows PowerShell:
+
+```powershell
+python -m venv .venv-check
+.venv-check\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install zip-logstream
+python -c "import zip_logstream; print(zip_logstream.__version__)"
 ```

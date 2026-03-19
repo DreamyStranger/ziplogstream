@@ -1,7 +1,7 @@
 # Architecture
 
 ## Goal
-ziplogstream streams decoded text lines from files inside ZIP archives without extracting them to disk or loading the full file into memory.
+zip-logstream streams decoded text lines from files inside ZIP archives without extracting them to disk or loading the full file into memory.
 
 ## Package Layout
 

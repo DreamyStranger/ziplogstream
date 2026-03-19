@@ -1,14 +1,14 @@
-# ziplogstream
+# zip-logstream
 
-![CI](https://github.com/DreamyStranger/ziplogstream/actions/workflows/ci.yml/badge.svg)
-[![Python Versions](https://img.shields.io/pypi/pyversions/ziplogstream.svg)](https://pypi.org/project/ziplogstream/)
-![License](https://img.shields.io/github/license/DreamyStranger/ziplogstream.svg)
-![Tests](https://img.shields.io/badge/tests-pytest-blue)
-[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/DreamyStranger/ziplogstream/actions/workflows/ci.yml)
+[![CI](https://github.com/DreamyStranger/zip-logstream/actions/workflows/ci.yml/badge.svg)](https://github.com/DreamyStranger/zip-logstream/actions/workflows/ci.yml)
+[![Release](https://github.com/DreamyStranger/zip-logstream/actions/workflows/release.yml/badge.svg)](https://github.com/DreamyStranger/zip-logstream/actions/workflows/release.yml)
+[![Python Versions](https://img.shields.io/pypi/pyversions/zip-logstream.svg)](https://pypi.org/project/zip-logstream/)
+[![License](https://img.shields.io/github/license/DreamyStranger/zip-logstream.svg)](LICENSE)
+[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/DreamyStranger/zip-logstream/actions/workflows/ci.yml)
 
 **Streaming line reader for large log files stored inside ZIP archives.**
 
-`ziplogstream` provides a fast, memory-bounded way to iterate over text lines
+`zip-logstream` provides a fast, memory-bounded way to iterate over text lines
 from a file stored inside a ZIP archive **without extracting the archive to
 disk and without loading the entire file into memory**.
 
@@ -50,7 +50,7 @@ hundreds of megabytes or gigabytes in size.
 Install from PyPI:
 
 ```bash
-pip install ziplogstream
+pip install zip-logstream
 ```
 
 Or install directly from source:
@@ -78,7 +78,7 @@ Python **3.10+** is required.
 ## Quick Start
 
 ```python
-from ziplogstream import LineStreamer
+from zip_logstream import LineStreamer
 
 streamer = LineStreamer("logs.zip", "app.log")
 
@@ -106,6 +106,9 @@ The default resolver behaves as follows:
 2. If no basename match exists, it falls back to **suffix matching**.
 3. If multiple matches exist, a `ZipMemberAmbiguityError` is raised.
 4. If no match exists, a `ZipMemberNotFoundError` is raised.
+
+Archive filenames do not need to end in `.zip`. Any existing file path is
+accepted, and the library validates the payload when it opens the archive.
 
 Example archive:
 
@@ -136,7 +139,7 @@ LineStreamer("logs.zip", "service-a/app.log")
 Streaming behavior can be configured using `LineStreamerConfig`.
 
 ```python
-from ziplogstream import LineStreamer, LineStreamerConfig
+from zip_logstream import LineStreamer, LineStreamerConfig
 
 config = LineStreamerConfig(
     chunk_size=1 << 20,         # 1 MiB read chunks
@@ -183,7 +186,7 @@ You may provide a custom function to determine which ZIP member should be read.
 
 ```python
 import zipfile
-from ziplogstream import LineStreamer
+from zip_logstream import LineStreamer
 
 def pick_latest_log(zf: zipfile.ZipFile, target: str) -> str:
     candidates = [name for name in zf.namelist() if name.endswith(".log")]
@@ -216,7 +219,7 @@ and it must return **one exact member name**.
 The main public entry points are:
 
 ```python
-from ziplogstream import (
+from zip_logstream import (
     LineStreamer,
     LineStreamerConfig,
     default_zip_member_resolver,
@@ -232,10 +235,10 @@ from ziplogstream import (
 
 ## Error Handling
 
-`ziplogstream` exposes a small, explicit exception hierarchy.
+`zip-logstream` exposes a small, explicit exception hierarchy.
 
 ```python
-from ziplogstream import (
+from zip_logstream import (
     ConfigurationError,
     ZipMemberAmbiguityError,
     ZipMemberNotFoundError,
@@ -275,7 +278,7 @@ bounded memory usage.
 
 ## Performance
 
-`ziplogstream` is optimized for throughput while preserving a simple API.
+`zip-logstream` is optimized for throughput while preserving a simple API.
 
 Benchmark results (median across 3 runs, 1 MiB chunk size, local machine):
 
@@ -320,7 +323,7 @@ Memory usage is driven primarily by:
 - current buffered partial line
 - temporary decode allocations
 
-This makes `ziplogstream` suitable for very large ZIP-contained logs where full
+This makes `zip-logstream` suitable for very large ZIP-contained logs where full
 extraction or full in-memory loading would be impractical.
 
 ---
@@ -329,9 +332,19 @@ extraction or full in-memory loading would be impractical.
 
 Create a virtual environment and install the project in editable mode:
 
+macOS / Linux:
+
 ```bash
 python -m venv .venv
 source .venv/bin/activate
+pip install -e .[dev]
+```
+
+Windows PowerShell:
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
 pip install -e .[dev]
 ```
 
@@ -344,7 +357,7 @@ pytest
 Run coverage:
 
 ```bash
-pytest --cov=ziplogstream --cov-report=term-missing
+pytest --cov=zip_logstream --cov-report=term-missing
 ```
 
 Run benchmarks:
@@ -370,12 +383,13 @@ python scripts/stress_large_zip.py --size-gib 1.0 --track-memory --report-out re
 ## Project Structure
 
 ```text
-ziplogstream/
+zip-logstream/
 ├── .github/
 │   └── workflows/
-│       └── ci.yml
+│       ├── ci.yml
+│       └── release.yml
 ├── src/
-│   └── ziplogstream/
+│   └── zip_logstream/
 │       ├── __init__.py
 │       ├── py.typed
 │       ├── version.py

@@ -1,5 +1,5 @@
 """
-ziplogstream.streaming
+zip_logstream.streaming
 =====================
 
 Streaming primitives for decoding text lines from binary streams.

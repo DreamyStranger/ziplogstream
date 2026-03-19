@@ -37,8 +37,8 @@ import zipfile
 
 import pytest
 
-from ziplogstream import LineStreamer
-from ziplogstream.errors import ZipMemberNotFoundError
+from zip_logstream import LineStreamer
+from zip_logstream.errors import ZipMemberNotFoundError
 
 
 def test_stream_uses_custom_resolver_selected_member_end_to_end(

@@ -1,5 +1,5 @@
 """
-ziplogstream.protocols
+zip_logstream.protocols
 ======================
 
 Protocol definitions for public extension points.
@@ -7,7 +7,7 @@ Protocol definitions for public extension points.
 Overview
 --------
 This module defines structural typing contracts used across the
-ziplogstream package. The goal is to make extension points explicit,
+zip-logstream package. The goal is to make extension points explicit,
 well-documented, and friendly to static type checkers.
 
 At present, the primary extension point is ZIP member resolution:

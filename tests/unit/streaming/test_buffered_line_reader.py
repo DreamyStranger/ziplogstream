@@ -37,8 +37,8 @@ from __future__ import annotations
 
 import pytest
 
-from ziplogstream.config import LineStreamerConfig
-from ziplogstream.streaming.buffered_line_reader import BufferedLineReader
+from zip_logstream.config import LineStreamerConfig
+from zip_logstream.streaming.buffered_line_reader import BufferedLineReader
 
 
 def test_iter_lines_yields_basic_newline_delimited_lines(make_bytes_stream) -> None:

@@ -1,5 +1,5 @@
 """
-ziplogstream.archive
+zip_logstream.archive
 ===================
 
 Archive-related helpers for ZIP validation, opening, and member resolution.

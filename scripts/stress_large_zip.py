@@ -3,12 +3,12 @@
 scripts.stress_large_zip
 ========================
 
-Manual stress test for streaming a very large ZIP member with ``ziplogstream``.
+Manual stress test for streaming a very large ZIP member with ``zip-logstream``.
 
 Overview
 --------
 Generates a large ZIP archive containing one text member and streams it through
-``ziplogstream.LineStreamer``, measuring:
+``zip_logstream.LineStreamer``, measuring:
 
 - total lines streamed
 - total decoded bytes
@@ -57,7 +57,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
-from ziplogstream import LineStreamer, LineStreamerConfig
+from zip_logstream import LineStreamer, LineStreamerConfig
 
 MiB = 1024 * 1024
 GiB = 1024 * MiB
@@ -137,7 +137,7 @@ def render_report_file(result: StressResult, timestamp: str) -> str:
         timestamp:  ISO-8601 UTC timestamp string for the header.
     """
     header = "\n".join([
-        "ziplogstream Stress Test Results",
+        "zip-logstream Stress Test Results",
         "=" * 32,
         f"Run at: {timestamp}",
     ])

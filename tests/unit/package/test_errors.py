@@ -2,12 +2,12 @@
 tests.unit.package.test_errors
 ==============================
 
-Unit tests for :mod:`ziplogstream.errors`.
+Unit tests for :mod:`zip_logstream.errors`.
 
 Overview
 --------
 This module verifies the public exception hierarchy exported by the
-ziplogstream package.
+zip-logstream package.
 
 The exception hierarchy is a stable part of the public API: callers rely
 on catching ``ZipLogStreamError`` to handle any error from this library
@@ -27,7 +27,7 @@ from __future__ import annotations
 
 import pytest
 
-from ziplogstream.errors import (
+from zip_logstream.errors import (
     ConfigurationError,
     ZipLogStreamError,
     ZipMemberAmbiguityError,

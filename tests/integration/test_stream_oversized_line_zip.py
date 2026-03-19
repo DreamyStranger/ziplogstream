@@ -34,7 +34,7 @@ testing only the lower-level buffered reader in isolation.
 
 from __future__ import annotations
 
-from ziplogstream import LineStreamer, LineStreamerConfig
+from zip_logstream import LineStreamer, LineStreamerConfig
 
 
 def test_stream_oversized_unterminated_line_is_force_flushed_end_to_end(

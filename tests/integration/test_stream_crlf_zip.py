@@ -32,7 +32,7 @@ directly.
 
 from __future__ import annotations
 
-from ziplogstream import LineStreamer, LineStreamerConfig
+from zip_logstream import LineStreamer, LineStreamerConfig
 
 
 def test_stream_crlf_lines_are_normalized_end_to_end(make_text_zip) -> None:

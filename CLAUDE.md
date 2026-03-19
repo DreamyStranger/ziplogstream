@@ -1,4 +1,4 @@
-# Claude Instructions — ziplogstream
+# Claude Instructions — zip-logstream
 
 ## Overview
 Maintain a production-quality Python library for bounded-memory streaming of text lines from ZIP archive members.
@@ -61,9 +61,9 @@ Do not remove or rename public exports without being asked.
 See `docs/error-contract.md` for details.
 
 ## Project Structure
-- `src/ziplogstream/archive/` handles ZIP path validation and member resolution
-- `src/ziplogstream/streaming/` handles streaming and buffered line iteration
-- `src/ziplogstream/config.py` defines immutable streaming config
+- `src/zip_logstream/archive/` handles ZIP path validation and member resolution
+- `src/zip_logstream/streaming/` handles streaming and buffered line iteration
+- `src/zip_logstream/config.py` defines immutable streaming config
 - `tests/unit/` covers isolated behavior
 - `tests/integration/` covers ZIP-backed end-to-end behavior
 
@@ -78,7 +78,7 @@ See `docs/architecture.md` when needed.
 See `docs/testing.md` for commands.
 
 ## Release Rules
-- Version is sourced dynamically from `src/ziplogstream/version.py`
+- Version is sourced dynamically from `src/zip_logstream/version.py`
 - Do not edit `pyproject.toml` for version bumps
 - Releases are triggered by pushing a git tag like `v0.1.0`
 

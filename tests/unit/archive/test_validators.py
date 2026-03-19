@@ -23,8 +23,7 @@ The validator helpers are expected to:
 - reject empty string paths
 - raise ``FileNotFoundError`` for missing archive paths
 - raise ``ZipValidationError`` for non-file paths
-- raise ``ZipValidationError`` for non-``.zip`` suffixes
-- accept existing ZIP files
+- accept existing archive files regardless of filename suffix
 
 Test philosophy
 ---------------
@@ -40,8 +39,8 @@ from pathlib import Path
 
 import pytest
 
-from ziplogstream import ZipValidationError
-from ziplogstream.archive import normalize_zip_path, validate_zip_path
+from zip_logstream import ZipValidationError
+from zip_logstream.archive import normalize_zip_path, validate_zip_path
 
 
 def test_normalize_zip_path_accepts_path_instance(tmp_path: Path) -> None:
@@ -117,18 +116,20 @@ def test_validate_zip_path_raises_for_directory_input(tmp_path: Path) -> None:
         validate_zip_path(tmp_path)
 
 
-def test_validate_zip_path_raises_for_non_zip_suffix(tmp_path: Path) -> None:
+def test_validate_zip_path_accepts_existing_file_without_zip_suffix(tmp_path: Path) -> None:
     """
-    Ensure files without a ``.zip`` suffix are rejected.
+    Ensure existing files are not rejected purely because of their suffix.
 
-    This preserves the package's explicit ZIP-only contract at the archive
-    validation layer.
+    Some callers receive ZIP payloads with temporary or extensionless names.
+    Structural ZIP validation happens later when ``zipfile.ZipFile`` opens
+    the archive.
     """
     path = tmp_path / "file.txt"
-    path.write_text("hello", encoding="utf-8")
 
-    with pytest.raises(ZipValidationError, match="Expected a '.zip' archive"):
-        validate_zip_path(path)
+    with zipfile.ZipFile(path, "w") as zf:
+        zf.writestr("app.log", b"hello\n")
+
+    validate_zip_path(path)
 
 
 def test_validate_zip_path_accepts_existing_zip_file(tmp_path: Path) -> None:
@@ -146,14 +147,14 @@ def test_validate_zip_path_accepts_existing_zip_file(tmp_path: Path) -> None:
     validate_zip_path(path)
 
 
-def test_validate_zip_path_accepts_uppercase_zip_suffix(tmp_path: Path) -> None:
+def test_validate_zip_path_accepts_extensionless_archive_file(tmp_path: Path) -> None:
     """
-    Ensure the ``.zip`` suffix check is case-insensitive.
+    Ensure extensionless archive files are accepted.
 
-    The validator normalizes the suffix with ``.lower()`` before comparing,
-    so ``.ZIP`` and ``.Zip`` should pass the same as ``.zip``.
+    Real ZIP payloads are identified when the archive is opened, so the path
+    validator should not require any specific filename convention.
     """
-    path = tmp_path / "archive.ZIP"
+    path = tmp_path / "archive"
 
     with zipfile.ZipFile(path, "w") as zf:
         zf.writestr("app.log", b"hello\n")

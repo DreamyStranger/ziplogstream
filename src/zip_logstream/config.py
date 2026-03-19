@@ -1,5 +1,5 @@
 """
-ziplogstream.config
+zip_logstream.config
 ===================
 
 Configuration model for ZIP member line streaming.
@@ -35,7 +35,7 @@ from __future__ import annotations
 import codecs
 from dataclasses import dataclass
 
-from ziplogstream.errors import ConfigurationError
+from zip_logstream.errors import ConfigurationError
 
 
 @dataclass(frozen=True, slots=True)

@@ -1,13 +1,13 @@
 """
-ziplogstream.errors
+zip_logstream.errors
 ==================
 
-Custom exception hierarchy for the ziplogstream package.
+Custom exception hierarchy for the zip-logstream package.
 
 Overview
 --------
 This module defines all package-specific exceptions used across the
-ziplogstream codebase. Exposing a dedicated exception hierarchy allows
+zip-logstream codebase. Exposing a dedicated exception hierarchy allows
 callers to reliably catch errors originating from this library without
 interfering with unrelated exceptions.
 
@@ -21,7 +21,7 @@ Design principles
 
 class ZipLogStreamError(Exception):
     """
-    Base exception for all errors raised by the ziplogstream package.
+    Base exception for all errors raised by the zip-logstream package.
 
     Users who want to catch *any* error originating from this library
     can catch this base class.

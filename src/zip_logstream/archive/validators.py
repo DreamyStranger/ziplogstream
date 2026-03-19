@@ -1,5 +1,5 @@
 """
-ziplogstream.archive.validators
+zip_logstream.archive.validators
 ==============================
 
 Validation helpers for ZIP archive inputs.
@@ -7,7 +7,7 @@ Validation helpers for ZIP archive inputs.
 Overview
 --------
 This module contains validation logic for archive-related inputs used by
-the ziplogstream package. Its purpose is to keep path and archive checks
+the zip-logstream package. Its purpose is to keep path and archive checks
 separate from streaming and member resolution logic.
 
 Design goals
@@ -22,7 +22,6 @@ Current scope
 This module validates:
 - archive path existence
 - archive path type
-- expected `.zip` suffix
 
 Notes
 -----
@@ -35,7 +34,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ziplogstream.errors import ZipValidationError
+from zip_logstream.errors import ZipValidationError
 
 
 def normalize_zip_path(zip_path: Path | str) -> Path:
@@ -71,7 +70,6 @@ def validate_zip_path(zip_path: Path) -> None:
     Validation rules:
     - the path must exist
     - the path must refer to a file
-    - the path suffix must be `.zip` (case-insensitive)
 
     Args:
         zip_path:
@@ -82,15 +80,10 @@ def validate_zip_path(zip_path: Path) -> None:
             If the path does not exist.
 
         ZipValidationError:
-            If the path is not a file or does not have a `.zip` suffix.
+            If the path is not a file.
     """
     if not zip_path.exists():
         raise FileNotFoundError(f"ZIP not found: {zip_path}")
 
     if not zip_path.is_file():
         raise ZipValidationError(f"ZIP path is not a file: {zip_path}")
-
-    if zip_path.suffix.lower() != ".zip":
-        raise ZipValidationError(
-            f"Expected a '.zip' archive, got suffix: {zip_path.suffix or '<none>'}"
-        )

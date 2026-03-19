@@ -1,5 +1,5 @@
 """
-ziplogstream.streaming.line_streamer
+zip_logstream.streaming.line_streamer
 ===================================
 
 High-level ZIP member line streaming interface.
@@ -10,7 +10,7 @@ This module provides the public `LineStreamer` class, which streams
 decoded text lines from a target file stored inside a ZIP archive.
 
 The class is intentionally thin and orchestration-focused. It delegates:
-- path normalization and validation to `ziplogstream.archive.validators`
+- path normalization and validation to `zip_logstream.archive.validators`
 - member selection to a resolver
 - chunked binary line reading to `BufferedLineReader`
 
@@ -36,15 +36,15 @@ import zipfile
 from pathlib import Path
 from typing import Iterator
 
-from ziplogstream.archive import (
+from zip_logstream.archive import (
     default_zip_member_resolver,
     normalize_zip_path,
     validate_zip_path,
 )
-from ziplogstream.config import LineStreamerConfig
-from ziplogstream.errors import ZipMemberNotFoundError, ZipValidationError
-from ziplogstream.protocols import ZipMemberResolver
-from ziplogstream.streaming.buffered_line_reader import BufferedLineReader
+from zip_logstream.config import LineStreamerConfig
+from zip_logstream.errors import ZipMemberNotFoundError, ZipValidationError
+from zip_logstream.protocols import ZipMemberResolver
+from zip_logstream.streaming.buffered_line_reader import BufferedLineReader
 
 logger = logging.getLogger(__name__)
 

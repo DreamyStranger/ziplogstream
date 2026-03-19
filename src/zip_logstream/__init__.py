@@ -1,12 +1,12 @@
 """
-ziplogstream
+zip_logstream
 ===========
 
 Streaming UTF-8 and text lines directly from files inside ZIP archives.
 
 Overview
 --------
-`ziplogstream` is a focused library for bounded-memory, streaming reads of
+`zip_logstream` is a focused library for bounded-memory, streaming reads of
 text files stored inside ZIP archives. It is designed for large log-like
 inputs where full extraction is undesirable and a single-pass iteration
 model is preferred.

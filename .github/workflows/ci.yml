@@ -6,12 +6,13 @@ on:
 
 jobs:
   test:
-    name: Test (Python ${{ matrix.python-version }})
-    runs-on: ubuntu-latest
+    name: Test (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
       matrix:
+        os: ["ubuntu-latest", "windows-latest"]
         python-version: ["3.10", "3.11", "3.12", "3.13"]
 
     steps:
@@ -35,11 +36,16 @@ jobs:
         run: mypy src
 
       - name: Run tests
-        run: pytest --cov=ziplogstream --cov-report=term-missing
+        run: pytest --cov=zip_logstream --cov-report=term-missing
 
   package:
     name: Package validation
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest", "windows-latest"]
 
     steps:
       - name: Checkout repository
@@ -63,6 +69,7 @@ jobs:
 
       # --- Smoke test: wheel ---
       - name: Smoke test (wheel)
+        shell: bash
         run: |
           python -m venv .venv-wheel
           . .venv-wheel/bin/activate
@@ -70,19 +77,20 @@ jobs:
           pip install --no-cache-dir dist/*.whl
           python - <<'PY'
           import importlib.resources as resources
-          import ziplogstream
-          from ziplogstream import LineStreamer
+          import zip_logstream
+          from zip_logstream import LineStreamer
 
-          print("version:", ziplogstream.__version__)
+          print("version:", zip_logstream.__version__)
           print("LineStreamer import ok")
 
-          py_typed = resources.files("ziplogstream").joinpath("py.typed")
+          py_typed = resources.files("zip_logstream").joinpath("py.typed")
           assert py_typed.is_file(), "py.typed missing"
           print("py.typed present")
           PY
 
       # --- Smoke test: sdist ---
       - name: Smoke test (sdist)
+        shell: bash
         run: |
           python -m venv .venv-sdist
           . .venv-sdist/bin/activate
@@ -90,13 +98,13 @@ jobs:
           pip install --no-cache-dir dist/*.tar.gz
           python - <<'PY'
           import importlib.resources as resources
-          import ziplogstream
-          from ziplogstream import LineStreamer
+          import zip_logstream
+          from zip_logstream import LineStreamer
 
-          print("version:", ziplogstream.__version__)
+          print("version:", zip_logstream.__version__)
           print("LineStreamer import ok")
 
-          py_typed = resources.files("ziplogstream").joinpath("py.typed")
+          py_typed = resources.files("zip_logstream").joinpath("py.typed")
           assert py_typed.is_file(), "py.typed missing"
           print("py.typed present")
           PY

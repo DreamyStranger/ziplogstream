@@ -2,7 +2,7 @@
 tests.unit.archive.test_member_resolution
 =========================================
 
-Unit tests for :mod:`ziplogstream.archive.member_resolution`.
+Unit tests for :mod:`zip_logstream.archive.member_resolution`.
 
 Overview
 --------
@@ -44,9 +44,9 @@ from pathlib import Path
 
 import pytest
 
-from ziplogstream import ZipMemberAmbiguityError, ZipMemberNotFoundError, ZipValidationError
-from ziplogstream.archive import default_zip_member_resolver
-from ziplogstream.archive.member_resolution import resolve_zip_member_name
+from zip_logstream import ZipMemberAmbiguityError, ZipMemberNotFoundError, ZipValidationError
+from zip_logstream.archive import default_zip_member_resolver
+from zip_logstream.archive.member_resolution import resolve_zip_member_name
 
 
 def test_resolver_prefers_exact_basename_match_when_target_is_plain_filename(
@@ -271,16 +271,16 @@ def test_resolve_zip_member_name_raises_for_missing_archive(tmp_path: Path) -> N
         )
 
 
-def test_resolve_zip_member_name_raises_for_invalid_archive_suffix(
+def test_resolve_zip_member_name_raises_for_non_zip_file_contents(
     tmp_path: Path,
 ) -> None:
     """
-    Ensure non-ZIP archive paths are rejected before resolution begins.
+    Ensure non-ZIP file contents are rejected when archive opening begins.
     """
     path = tmp_path / "not_a_zip.txt"
     path.write_text("hello", encoding="utf-8")
 
-    with pytest.raises(ZipValidationError, match="Expected a '.zip' archive"):
+    with pytest.raises(ZipValidationError, match="Invalid or corrupt ZIP archive"):
         resolve_zip_member_name(path, "app.log", resolver=default_zip_member_resolver)
 
 

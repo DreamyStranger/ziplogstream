@@ -1,5 +1,5 @@
 """
-ziplogstream.archive.member_resolution
+zip_logstream.archive.member_resolution
 =====================================
 
 Deterministic ZIP member resolution strategies.
@@ -43,8 +43,8 @@ import zipfile
 from collections.abc import Sequence
 from pathlib import Path
 
-from ziplogstream.errors import ZipMemberAmbiguityError, ZipMemberNotFoundError, ZipValidationError
-from ziplogstream.protocols import ZipMemberResolver
+from zip_logstream.errors import ZipMemberAmbiguityError, ZipMemberNotFoundError, ZipValidationError
+from zip_logstream.protocols import ZipMemberResolver
 
 from .validators import normalize_zip_path, validate_zip_path
 

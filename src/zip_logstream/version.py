@@ -1,5 +1,5 @@
 """
-ziplogstream.version
+zip_logstream.version
 ===================
 
 Package version metadata.

@@ -37,7 +37,7 @@ functions.
 
 from __future__ import annotations
 
-from ziplogstream import LineStreamer
+from zip_logstream import LineStreamer
 
 
 def test_stream_single_member_archive_end_to_end(make_text_zip) -> None:

@@ -43,8 +43,8 @@ from pathlib import Path
 
 import pytest
 
-from ziplogstream import LineStreamer, LineStreamerConfig
-from ziplogstream.errors import ZipMemberNotFoundError, ZipValidationError
+from zip_logstream import LineStreamer, LineStreamerConfig
+from zip_logstream.errors import ZipMemberNotFoundError, ZipValidationError
 
 
 def test_streamer_streams_lines_from_zip_member(make_text_zip) -> None:
@@ -168,20 +168,21 @@ def test_streamer_raises_file_not_found_when_zip_does_not_exist(
         list(streamer.stream())
 
 
-def test_streamer_raises_zip_validation_error_for_non_zip_suffix(
+def test_streamer_accepts_valid_zip_file_with_non_zip_suffix(
     tmp_path: Path,
 ) -> None:
     """
-    Ensure ``ZipValidationError`` is raised by ``stream()`` when the path
-    does not have a ``.zip`` suffix.
+    Ensure ``stream()`` accepts valid ZIP payloads regardless of filename
+    suffix.
     """
     path = tmp_path / "archive.tar"
-    path.write_bytes(b"not a zip")
+
+    with zipfile.ZipFile(path, "w") as zf:
+        zf.writestr("logs/app.log", b"alpha\nbeta\n")
 
     streamer = LineStreamer(path, "app.log")
 
-    with pytest.raises(ZipValidationError):
-        list(streamer.stream())
+    assert list(streamer.stream()) == ["alpha", "beta"]
 
 
 def test_streamer_yields_empty_iterator_for_empty_member(make_zip) -> None:

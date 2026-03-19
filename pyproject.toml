@@ -1,7 +1,7 @@
 # ============================================================================
 # pyproject.toml
 # ============================================================================
-# Project configuration for the ziplogstream package.
+# Project configuration for the zip-logstream package.
 #
 # This file defines:
 # - build backend and packaging metadata
@@ -18,7 +18,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 # Core package metadata exposed to packaging tools and package indexes.
-name = "ziplogstream"
+name = "zip-logstream"
 description = "Bounded-memory streaming of text lines from files inside ZIP archives."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -68,9 +68,9 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/DreamyStranger/ziplogstream"
-Repository = "https://github.com/DreamyStranger/ziplogstream"
-Issues = "https://github.com/DreamyStranger/ziplogstream/issues"
+Homepage = "https://github.com/DreamyStranger/zip-logstream"
+Repository = "https://github.com/DreamyStranger/zip-logstream"
+Issues = "https://github.com/DreamyStranger/zip-logstream/issues"
 
 [tool.setuptools]
 # The project uses a src/ layout.
@@ -80,11 +80,11 @@ include-package-data = true
 [tool.setuptools.packages.find]
 # Find packages under src/.
 where = ["src"]
-include = ["ziplogstream*"]
+include = ["zip_logstream*"]
 
 [tool.setuptools.package-data]
 # PEP 561 marker so downstream users can consume inline type information.
-ziplogstream = ["py.typed"]
+zip_logstream = ["py.typed"]
 
 [tool.pytest.ini_options]
 # Pytest configuration kept in pyproject.toml for centralized tooling config.
@@ -92,7 +92,7 @@ minversion = "8.0"
 testpaths = ["tests"]
 
 # Adding src/ to the Python path makes local test execution convenient.
-# Imports should still use `import ziplogstream`, not `import src.ziplogstream`.
+# Imports should still use `import zip_logstream`, not `import src.zip_logstream`.
 pythonpath = ["src"]
 
 # -ra: show extra summary info for skipped, failed, and xfailed tests.
@@ -102,7 +102,7 @@ addopts = [
 
 [tool.coverage.run]
 # Measure branch coverage and restrict coverage collection to the package itself.
-source = ["ziplogstream"]
+source = ["zip_logstream"]
 branch = true
 
 [tool.coverage.report]
@@ -134,4 +134,4 @@ show_error_codes = true
 
 [tool.setuptools.dynamic]
 # pulls version number from a python file
-version = {attr = "ziplogstream.version.__version__"}
+version = {attr = "zip_logstream.version.__version__"}

@@ -17,8 +17,8 @@ from pathlib import Path
 
 import pytest
 
-from ziplogstream import LineStreamer
-from ziplogstream.errors import (
+from zip_logstream import LineStreamer
+from zip_logstream.errors import (
     ZipMemberAmbiguityError,
     ZipMemberNotFoundError,
     ZipValidationError,
@@ -52,10 +52,10 @@ def test_zip_validation_error_for_corrupt_archive(tmp_path: Path) -> None:
     assert isinstance(exc_info.value.__cause__, zipfile.BadZipFile)
 
 
-def test_zip_validation_error_for_non_zip_suffix(tmp_path: Path) -> None:
+def test_zip_validation_error_for_non_zip_file_contents(tmp_path: Path) -> None:
     """
     Ensure ``ZipValidationError`` is raised end-to-end when the archive path
-    lacks a ``.zip`` suffix.
+    points at non-ZIP file contents.
     """
     path = tmp_path / "archive.tar"
     path.write_bytes(b"not a zip")

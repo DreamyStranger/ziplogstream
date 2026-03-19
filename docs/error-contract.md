@@ -22,7 +22,7 @@ Raised for invalid or unreadable ZIP inputs.
 Examples:
 - empty path string
 - non-file path
-- wrong suffix
+- non-ZIP payload
 - archive cannot be opened as a valid ZIP
 
 ### ZipMemberNotFoundError
@@ -44,7 +44,7 @@ Raised when multiple members match and cannot be resolved.
 Broad catch:
 
 ```python
-from ziplogstream import ZipLogStreamError
+from zip_logstream import ZipLogStreamError
 
 try:
     ...
@@ -55,7 +55,7 @@ except ZipLogStreamError:
 Targeted catch:
 
 ```python
-from ziplogstream import ZipValidationError, ZipMemberAmbiguityError
+from zip_logstream import ZipValidationError, ZipMemberAmbiguityError
 
 try:
     ...

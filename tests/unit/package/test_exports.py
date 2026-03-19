@@ -7,7 +7,7 @@ Unit tests for the public package export surface.
 
 from __future__ import annotations
 
-from ziplogstream import (
+from zip_logstream import (
     ConfigurationError,
     LineStreamer,
     LineStreamerConfig,

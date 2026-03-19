@@ -29,8 +29,8 @@ from __future__ import annotations
 
 import pytest
 
-from ziplogstream.config import LineStreamerConfig
-from ziplogstream.errors import ConfigurationError
+from zip_logstream.config import LineStreamerConfig
+from zip_logstream.errors import ConfigurationError
 
 
 def test_config_defaults_are_stable() -> None:

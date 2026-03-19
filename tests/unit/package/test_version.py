@@ -7,7 +7,7 @@ Unit tests for :mod:`zipstreamer.version`.
 
 from __future__ import annotations
 
-from ziplogstream.version import __version__
+from zip_logstream.version import __version__
 
 
 def test_version_is_non_empty_string() -> None:

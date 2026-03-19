@@ -1,5 +1,19 @@
 # Testing
 
+## Activate Virtual Environment
+
+macOS / Linux:
+
+```bash
+source .venv/bin/activate
+```
+
+Windows PowerShell:
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
 ## Install Dev Dependencies
 
 ```bash
@@ -15,7 +29,7 @@ pytest
 ## Run With Coverage
 
 ```bash
-pytest --cov=ziplogstream --cov-report=term-missing
+pytest --cov=zip_logstream --cov-report=term-missing
 ```
 
 ## Run Single File
@@ -56,6 +70,6 @@ twine check dist/*
 ## CI Expectations
 - lint passes
 - type checking passes
-- tests pass across supported Python versions
-- package builds successfully
+- tests pass across supported Python versions on Linux and Windows
+- package builds successfully on Linux and Windows
 - distributions pass twine check

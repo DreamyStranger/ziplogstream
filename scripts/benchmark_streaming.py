@@ -3,7 +3,7 @@
 scripts.benchmark_streaming
 ===========================
 
-Performance benchmark for ``ziplogstream.LineStreamer``.
+Performance benchmark for ``zip_logstream.LineStreamer``.
 
 Overview
 --------
@@ -68,7 +68,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import IO, Callable, Iterable
 
-from ziplogstream import LineStreamer, LineStreamerConfig
+from zip_logstream import LineStreamer, LineStreamerConfig
 
 MiB = 1024 * 1024
 
@@ -421,7 +421,7 @@ def render_table_file(
         timestamp:  ISO-8601 UTC timestamp string for the header.
     """
     header_lines = [
-        "ziplogstream Benchmark Results",
+        "zip-logstream Benchmark Results",
         "=" * 30,
         f"Run at:        {timestamp}",
         f"chunk_size:    {config.chunk_size:,} bytes",
@@ -474,7 +474,7 @@ def resolve_cases(selected_names: list[str] | None) -> list[BenchmarkCase]:
 def build_arg_parser() -> argparse.ArgumentParser:
     """Construct the command-line argument parser."""
     parser = argparse.ArgumentParser(
-        description="Benchmark end-to-end ZIP member streaming with ziplogstream.",
+        description="Benchmark end-to-end ZIP member streaming with zip-logstream.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
@@ -616,7 +616,7 @@ def main() -> int:
         args.workspace.mkdir(parents=True, exist_ok=True)
         execute(args.workspace)
     else:
-        with TemporaryDirectory(prefix="ziplogstream-bench-") as tmpdir:
+        with TemporaryDirectory(prefix="zip-logstream-bench-") as tmpdir:
             execute(Path(tmpdir))
 
     # Print summary table to stdout.
