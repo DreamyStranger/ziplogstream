@@ -76,10 +76,9 @@ jobs:
         shell: bash
         run: |
           python -m venv .venv-wheel
-          . .venv-wheel/bin/activate
-          python -m pip install --upgrade pip
-          pip install --no-cache-dir dist/*.whl
-          python - <<'PY'
+          .venv-wheel/Scripts/python.exe -m pip install --upgrade pip || .venv-wheel/bin/python -m pip install --upgrade pip
+          .venv-wheel/Scripts/pip.exe install --no-cache-dir dist/*.whl || .venv-wheel/bin/pip install --no-cache-dir dist/*.whl
+          .venv-wheel/Scripts/python.exe - <<'PY' || .venv-wheel/bin/python - <<'PY'
           import importlib.resources as resources
           import zip_logstream
           from zip_logstream import LineStreamer
@@ -96,10 +95,9 @@ jobs:
         shell: bash
         run: |
           python -m venv .venv-sdist
-          . .venv-sdist/bin/activate
-          python -m pip install --upgrade pip
-          pip install --no-cache-dir dist/*.tar.gz
-          python - <<'PY'
+          .venv-sdist/Scripts/python.exe -m pip install --upgrade pip || .venv-sdist/bin/python -m pip install --upgrade pip
+          .venv-sdist/Scripts/pip.exe install --no-cache-dir dist/*.tar.gz || .venv-sdist/bin/pip install --no-cache-dir dist/*.tar.gz
+          .venv-sdist/Scripts/python.exe - <<'PY' || .venv-sdist/bin/python - <<'PY'
           import importlib.resources as resources
           import zip_logstream
           from zip_logstream import LineStreamer
